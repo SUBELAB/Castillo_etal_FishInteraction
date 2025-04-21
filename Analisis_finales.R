@@ -10,6 +10,7 @@ library(readr)
 library(lme4)
 library(MuMIn)
 library(gridExtra)
+library(emmeans)
 
 ##Titulo:Evaluación del efecto del régimen de manejo sobre las interacciones ecológicas de peces en bosques dominados por macroalgas pardas en Chile
 ##Autores: Catalina Castillo-Sáez1, Catalina S. Ruz1, Ítalo Fernández-Cisternas1, Alejandro Pérez-Matus1,2, Mauricio F. Landaeta2,3,4. 
@@ -101,7 +102,11 @@ richness_normal_mix2 <- lmer(rich ~ management + offset(log(time)) + (1 | year) 
 )
 summary(richness_normal_mix2)
 Anova(richness_normal_mix2, type="III")                            
-                             
+  
+# Comparaciones de Tukey para 'management'
+tukey_rich <- emmeans(richness_normal_mix2, pairwise ~ management, adjust = "tukey")
+print(tukey_rich)
+
 r.squaredGLMM(richness_normal_mix2)*100
 
 # Analisis de residuales del modelo 
@@ -199,12 +204,12 @@ print(tukey_abun)
 
 # Analisis de residuales del modelo 
 # Calcular residuales y valores ajustados
-Variables$residuals <- residuals(abundance_nb_mixed, type = "pearson")  # Residuales tipo Pearson
-Variables$fitted <- fitted(abundance_nb_mixed)  # Valores ajustados
+VariablesCHA$residuals <- residuals(abundance_nb_mixed1, type = "pearson")  # Residuales tipo Pearson
+VariablesCHA$fitted <- fitted(abundance_nb_mixed1)  # Valores ajustados
 # guarda la informacion requerida para el analisis de residuales
 
 # Q-Q plot
-qq.model <- ggplot(data = Variables, aes(sample = residuals)) + 
+qq.model <- ggplot(data = VariablesCHA, aes(sample = residuals)) + 
   stat_qq_point() +
   stat_qq_line() +
   stat_qq_band(alpha = 0.3) +
@@ -216,7 +221,7 @@ qq.model <- ggplot(data = Variables, aes(sample = residuals)) +
   )
 
 # Residuales vs valores predichos
-res.fit <- ggplot(data = Variables, aes(x = fitted, y = residuals)) + 
+res.fit <- ggplot(data = VariablesCHA, aes(x = fitted, y = residuals)) + 
   geom_point(aes(col = management), size = 2) +
   geom_hline(yintercept = 0, linetype = 2, size = 1.2) +
   theme_bw() +
@@ -353,6 +358,10 @@ summary(Finteract_nb_mixed1)
 Anova(Finteract_nb_mixed1, type="III")
 r.squaredGLMM(Finteract_nb_mixed1)*100
 
+# Comparaciones de Tukey para 'management'
+tukey_strength1 <- emmeans(Finteract_nb_mixed1, pairwise ~ management, adjust = "tukey")
+print(tukey_strength1)
+
 # Modelo mixto con distribución binomial negativa para Las Cruces
 Finteract_nb_mixed2 <- glmer.nb(detec ~ management + offset(log(time)) + (1 | year),
                                 data = VariablesLC)
@@ -361,10 +370,14 @@ summary(Finteract_nb_mixed2)
 Anova(Finteract_nb_mixed2, type="III")
 r.squaredGLMM(Finteract_nb_mixed2)*100
 
+# Comparaciones de Tukey para 'management'
+tukey_strength2 <- emmeans(Finteract_nb_mixed2, pairwise ~ management, adjust = "tukey")
+print(tukey_strength2)
+
 # Analisis de residuales del modelo 
 # Calcular residuales y valores ajustados
-Variables$residuals <- residuals(Finteract_nb_mixed, type = "pearson")  # Residuales tipo Pearson
-Variables$fitted <- fitted(Finteract_nb_mixed)  # Valores ajustados
+Variables$residuals <- residuals(Finteract_nb_mixed1, type = "pearson")  # Residuales tipo Pearson
+Variables$fitted <- fitted(Finteract_nb_mixed1)  # Valores ajustados
 # guarda la informacion requerida para el analisis de residuales
 
 # Q-Q plot
