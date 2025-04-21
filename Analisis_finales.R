@@ -355,7 +355,7 @@ r.squaredGLMM(Finteract_nb_mixed1)*100
 
 # Modelo mixto con distribución binomial negativa para Las Cruces
 Finteract_nb_mixed2 <- glmer.nb(detec ~ management + offset(log(time)) + (1 | year),
-                                data = Variables %>% filter(site == "Las Cruces"))
+                                data = VariablesLC)
 
 summary(Finteract_nb_mixed2)
 Anova(Finteract_nb_mixed2, type="III")
